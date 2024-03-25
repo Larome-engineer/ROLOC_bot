@@ -52,7 +52,7 @@ async def form_handler(call: types.CallbackQuery, state: FSMContext):
             text=cost_things,
             reply_markup=cost_builder.as_markup()
         )
-        await call.answer()
+    await call.answer()
 
 
 @form_router.message(FormState.cost)
@@ -67,7 +67,7 @@ async def cost_state(call: types.CallbackQuery, state: FSMContext):
             text=speed_things,
             reply_markup=speed_builder.as_markup()
         )
-        await call.answer()
+    await call.answer()
 
 
 @form_router.message(FormState.speed)
@@ -81,13 +81,20 @@ async def speed_state(call: types.CallbackQuery, state: FSMContext):
         await call.message.edit_text(
             text="📩 <strong>Отправьте email</strong>",
         )
-        await call.answer()
+    await call.answer()
 
 
 @form_router.message(FormState.email)
 async def email_state(msg: types.Message, state: FSMContext):
     if await state.get_state() is None:
         return
+    if msg.photo or msg.video or msg.voice or msg.audio \
+            or msg.document or msg.video_note or msg.story:
+        await msg.answer("❗️Медиафайлы на данном этапе не принимаются")
+        await state.set_state(FormState.email)
+        await msg.answer(
+            text="📩 <strong>Отправьте email</strong>",
+        )
     else:
         await state.update_data(email=msg.text)
         await state.set_state(FormState.phone)
@@ -98,6 +105,11 @@ async def email_state(msg: types.Message, state: FSMContext):
 async def phone_state(msg: types.Message, state: FSMContext):
     if await state.get_state() is None:
         return
+    if msg.photo or msg.video or msg.voice or msg.audio \
+            or msg.document or msg.video_note or msg.story:
+        await msg.answer("❗️Медиафайлы на данном этапе не принимаются")
+        await state.set_state(FormState.phone)
+        await msg.answer('📞 <strong>Отправьте номер телефона</strong>')
     else:
         await state.update_data(phone=msg.text)
         await state.set_state(FormState.name)
@@ -108,6 +120,11 @@ async def phone_state(msg: types.Message, state: FSMContext):
 async def name_state(msg: types.Message, state: FSMContext):
     if await state.get_state() is None:
         return
+    if msg.photo or msg.video or msg.voice or msg.audio \
+            or msg.document or msg.video_note or msg.story:
+        await msg.answer("❗️Медиафайлы на данном этапе не принимаются")
+        await state.set_state(FormState.name)
+        await msg.answer('👤 <strong>Отправьте Ваше имя</strong>')
     else:
         await state.update_data(name=msg.text)
         await state.set_state(FormState.communication)
@@ -119,6 +136,13 @@ async def name_state(msg: types.Message, state: FSMContext):
 async def communication_state(msg: types.Message, state: FSMContext):
     if await state.get_state() is None:
         return
+    if msg.photo or msg.video or msg.voice or msg.audio \
+            or msg.document or msg.video_note or msg.story:
+        await msg.answer("❗️Медиафайлы на данном этапе не принимаются")
+        await state.set_state(FormState.communication)
+        await msg.answer('📱 <strong>Где Вам будет удобнее связаться?</strong>\n\n'
+                         '<em>▫️ Можете отправить несколько способов связи одним сообщением</em>')
+
     else:
         await state.update_data(communication=msg.text)
         await state.set_state(FormState.wishes)
@@ -129,6 +153,10 @@ async def communication_state(msg: types.Message, state: FSMContext):
 async def wishes_state(msg: types.Message, state: FSMContext):
     if await state.get_state() is None:
         return
+    if msg.photo or msg.voice or msg.document or msg.audio or msg.video or msg.story or msg.video_note:
+        await msg.answer("❗️Медиафайлы на данном этапе не принимаются")
+        await state.set_state(FormState.wishes)
+        await msg.answer(wishes_msg)
     else:
         await state.update_data(wishes=msg.text)
         await state.set_state(FormState.files)
