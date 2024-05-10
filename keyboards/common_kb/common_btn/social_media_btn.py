@@ -1,5 +1,6 @@
 from aiogram.types import InlineKeyboardButton
+from data.links import links
 
-vk = InlineKeyboardButton(text='VK', callback_data='socialVK', url='https://vk.com/roloc.design')
-telegram = InlineKeyboardButton(text='Telegram', callback_data='socialLinkTG', url='https://t.me/roloc_design')
-website = InlineKeyboardButton(text='Website', callback_data='socialWS', url='https://roloc.ru/')
+vk = InlineKeyboardButton(text='VK', callback_data='socialVK', url=links['vk'])
+telegram = InlineKeyboardButton(text='Telegram', callback_data='socialLinkTG', url=links['telegram'])
+website = InlineKeyboardButton(text='Website', callback_data='socialWS', url=links['website'])

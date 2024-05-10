@@ -41,6 +41,8 @@ async def comp_handler(pa: types.PollAnswer, state: FSMContext):
 @form_router.message(FormState.design_type)
 @form_router.callback_query(F.data.startswith("ss"))
 async def form_handler(call: types.CallbackQuery, state: FSMContext):
+    await call.answer()
+
     if await state.get_state() is None:
         return
     else:
@@ -52,12 +54,13 @@ async def form_handler(call: types.CallbackQuery, state: FSMContext):
             text=cost_things,
             reply_markup=cost_builder.as_markup()
         )
-    await call.answer()
 
 
 @form_router.message(FormState.cost)
 @form_router.callback_query(F.data.startswith("cost"))
 async def cost_state(call: types.CallbackQuery, state: FSMContext):
+    await call.answer()
+
     if await state.get_state() is None:
         return
     else:
@@ -67,12 +70,13 @@ async def cost_state(call: types.CallbackQuery, state: FSMContext):
             text=speed_things,
             reply_markup=speed_builder.as_markup()
         )
-    await call.answer()
 
 
 @form_router.message(FormState.speed)
 @form_router.callback_query(F.data.startswith("speed"))
 async def speed_state(call: types.CallbackQuery, state: FSMContext):
+    await call.answer()
+
     if await state.get_state() is None:
         return
     else:
@@ -81,7 +85,6 @@ async def speed_state(call: types.CallbackQuery, state: FSMContext):
         await call.message.edit_text(
             text="📩 <strong>Отправьте email</strong>",
         )
-    await call.answer()
 
 
 @form_router.message(FormState.email)
@@ -222,6 +225,8 @@ async def files_state(msg: types.Message, state: FSMContext, album: list = None)
 @form_router.message(FormState.files)
 @form_router.callback_query(F.data.contains("end"))
 async def none_files_state(call: types.CallbackQuery, state: FSMContext):
+    await call.answer()
+
     if await state.get_state() is None:
         await call.answer()
     else:
@@ -230,8 +235,6 @@ async def none_files_state(call: types.CallbackQuery, state: FSMContext):
 
         await roloc_bot.delete_message(call.from_user.id, call.message.message_id)
         await __perform_pdf(call.from_user.id, state)
-
-    await call.answer()
 
 
 async def __perform_pdf(msg: int, state: FSMContext):

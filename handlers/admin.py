@@ -31,40 +31,41 @@ class ChangePay(StatesGroup):
 
 @admin_router.callback_query(F.data.startswith("adm"))
 async def admin_menu(call: CallbackQuery, state: FSMContext):
-    call_data = call.data.split("_")[1]
-    match call_data:
-        case "1":
-            await call.message.edit_text(
-                text=get_num,
-            )
-            await state.set_state(FormID.f_id)
-        case "2":
-            await call.message.edit_text(
-                text=select_status,
-                reply_markup=status_builder.as_markup()
-            )
-        case "3":
-            await call.message.edit_text(
-                text=get_num,
-            )
-            await state.set_state(ChangeStatus.f_id)
-        case "4":
-
-            await call.message.edit_text(
-                text=get_num,
-            )
-            await state.set_state(ChangePay.f_id)
-        case "5":
-            await call.message.edit_text(
-                text=hello_msg,
-                reply_markup=start_builder.as_markup()
-            )
-
     await call.answer()
+
+    call_data = call.data.split("_")[1]
+    if call_data == "1":
+        await call.message.edit_text(
+            text=get_num,
+        )
+        await state.set_state(FormID.f_id)
+    elif call_data == "2":
+        await call.message.edit_text(
+            text=select_status,
+            reply_markup=status_builder.as_markup()
+        )
+    elif call_data == "3":
+        await call.message.edit_text(
+            text=get_num,
+        )
+        await state.set_state(ChangeStatus.f_id)
+    elif call_data == "4":
+
+        await call.message.edit_text(
+            text=get_num,
+        )
+        await state.set_state(ChangePay.f_id)
+    elif call_data == "5":
+        await call.message.edit_text(
+            text=hello_msg,
+            reply_markup=start_builder.as_markup()
+        )
 
 
 @admin_router.callback_query(F.data.startswith("status"))
 async def get_by_status(call: CallbackQuery):
+    await call.answer()
+
     call_data = call.data.split("_")[1]
     if call_data == "1":
         status = status_dict['status1']
@@ -74,7 +75,6 @@ async def get_by_status(call: CallbackQuery):
         text=get_all_by_status(status),
         reply_markup=admin_builder.as_markup()
     )
-    await call.answer()
 
 
 @admin_router.message(ChangeStatus.f_id)
@@ -93,6 +93,8 @@ async def change_status_start(msg: Message, state: FSMContext):
 @admin_router.message(ChangeStatus.c_status)
 @admin_router.callback_query(F.data.startswith("st"))
 async def change_status_end(call: CallbackQuery, state: FSMContext):
+    await call.answer()
+
     if await state.get_state() is None:
         return
     else:
@@ -111,8 +113,6 @@ async def change_status_end(call: CallbackQuery, state: FSMContext):
 
         await state.clear()
 
-    await call.answer()
-
 
 @admin_router.message(ChangePay.f_id)
 async def change_pay_start(msg: Message, state: FSMContext):
@@ -130,6 +130,8 @@ async def change_pay_start(msg: Message, state: FSMContext):
 @admin_router.message(ChangePay.c_pay)
 @admin_router.callback_query(F.data.startswith("pay"))
 async def change_pay_end(call: CallbackQuery, state: FSMContext):
+    await call.answer()
+
     if await state.get_state() is None:
         return
     else:
@@ -147,8 +149,6 @@ async def change_pay_end(call: CallbackQuery, state: FSMContext):
         )
 
         await state.clear()
-
-    await call.answer()
 
 
 @admin_router.message(FormID.f_id)

@@ -34,7 +34,8 @@ async def set_commands(bot: roloc_bot):
 
 
 @start_router.message(CommandStart())
-async def start_handler(msg: types.Message):
+async def start_handler(msg: types.Message, state: FSMContext):
+    await state.clear()
     if msg.from_user.id == int(ADM_ID):
         await roloc_bot.send_message(
             chat_id=msg.chat.id,
@@ -52,27 +53,28 @@ async def start_handler(msg: types.Message):
 
 @start_router.callback_query(F.data.startswith("start"))
 async def start_callback(call: types.CallbackQuery, state: FSMContext):
-    action = call.data.split("_")[1]
-    match action:
-        case "1":
-            await call.message.edit_text(
-                text=services_msg,
-                reply_markup=services_builder.as_markup()
-            )
-        case "2":
-            await call.message.edit_text(
-                text=about_msg,
-                reply_markup=about_builder.as_markup()
-            )
-        case '3':
-            await state.set_state(HelpState.name)
-            await call.message.edit_text(
-                text='👤 Как Вас зовут?',
-            )
-        case "4":
-            await call.message.edit_text(
-                text=close_msg,
-            )
-            await asyncio.sleep(5)
-            await call.message.delete()
     await call.answer()
+    await state.clear()
+    action = call.data.split("_")[1]
+    if action == "1":
+
+        await call.message.edit_text(
+            text=services_msg,
+            reply_markup=services_builder.as_markup()
+        )
+    elif action == "2":
+        await call.message.edit_text(
+            text=about_msg,
+            reply_markup=about_builder.as_markup()
+        )
+    elif action == "3":
+        await state.set_state(HelpState.name)
+        await call.message.edit_text(
+            text='👤 Как Вас зовут?',
+        )
+    elif action == "4":
+        await call.message.edit_text(
+            text=close_msg,
+        )
+        await asyncio.sleep(5)
+        await call.message.delete()
