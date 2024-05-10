@@ -45,7 +45,7 @@ async def set_communication(msg: types.Message, state: FSMContext):
              f"Текст: {data_list['text']}"
     )
     await roloc_bot.send_message(
-        chat_id=msg,
+        chat_id=msg.from_user.id,
         text='<strong>🕔 Ваша заявка обработана!</strong>\n\n'
              '<em>С Вами свяжутся в течении некоторого времени</em>'
     )
